@@ -1,32 +1,84 @@
-# representational state transfer application programming interface
-# fance way to say how 2 pieces of software communicate w one another
+# REST = Representational State Transfer
+# API = Application Programming Interface
+# fancy way to say:
+# "how 2 pieces of software communicate w each other"
 
-# 2 softwares in diff languages
-# REST API allows these different applications to communicate
-# one way, always a server and a client
-# uses JSON
-# and endpoint, where the request is made
-# REST communicates over the web
+# apps can be written in different languages
+# REST APIs allow these different applications to communicate over the web
 
-# eg: backend software, communicates with a database
-# u dont want to give direct access to the database
-# thus, diff api endpoints are exposed
+# usually follows a client-server architecture
+# client sends requests
+# server sends responses
 
-# a backend module, database, frontend module
-# the frontend module shouldnt have direct access to db, only backend
-# this maintaines modularity where multiple frontend modules can be connected to the be, maintains sync
-# security, if fe can directly access fe, all data can be accessed/ compromised
-# u can specifically make only certain parts of the interface public, which can be used as api 
+# data is commonly sent using JSON
 
-# http methods
-# GET retrieve data
-# POST write (new) data to the server
-# DELETE 
-# PUT Update/Replace data (Idempotent)
-# - u need to identify what data needs to replaced
-# - designed to give the same data over the same request
-# - in POST, even if the same ID is requested, a new record in the table is created
-# PATCH in large data, helps u change small portions of data
-# CRUD
+# APIs expose endpoints
+# endpoint = URL where requests are made
+# eg:
+# frontend -> backend -> database
 
-# 
+# frontend should NOT directly access the database
+# only the backend should talk to the db
+
+# why?
+# modularity:
+# multiple frontends (web app, mobile app, etc.)
+# can use the same backend
+
+# security:
+# prevents direct public access to sensitive db operations/data
+
+# backend controls:
+# what data can be accessed
+# who can access it
+# what operations are allowed
+
+# API endpoints act like controlled public interfaces
+# GET
+# retrieve/fetch data from server
+# POST
+# create new data on server
+# DELETE
+# remove data from server
+# PUT
+# update/replace existing data (idempotent)
+# usually replaces the entire resource
+
+# idempotent means:
+# sending the same request multiple times
+# gives the same final result
+
+# example:
+# updating user id=5 w same data repeatedly
+# still results in the same updated user
+
+# POST is NOT idempotent
+# sending same POST request multiple times
+# may create multiple new records
+
+# PATCH
+# partially update existing data
+# useful when only changing small portions of data
+
+# CREATE -> POST
+# READ   -> GET
+# UPDATE -> PUT / PATCH
+# DELETE -> DELETE
+
+import requests
+import json
+
+response = requests.get("https://api.stackexchange.com/2.3/questions?site=stackoverflow")
+
+print(response.json())
+print(response.json()['items'])
+
+# consuming an API for questions with 0 answers
+for data in response.json()['items']:
+    if data['answer_count'] == 0:
+        print(data['title'])
+        print(data['link'])
+    else:
+        print('skipped')
+    print()
+
